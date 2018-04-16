@@ -6,7 +6,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/shiimaxx/image-convert/converter"
+	"github.com/shiimaxx/lib/converter"
 )
 
 // Exit codes are int values that represent an exit code for a particular error.
