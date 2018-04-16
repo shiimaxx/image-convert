@@ -37,13 +37,15 @@ func (i *Image) ConvertToPNG() error {
 }
 
 // SearchImageFiles is a
-func SearchImageFiles(dir string) ([]string, error) {
+func SearchImageFiles(dir, srcExt string) ([]string, error) {
 	imageFiles := []string{}
 	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
-		imageFiles = append(imageFiles, path)
+		if filepath.Ext(path) == srcExt {
+			imageFiles = append(imageFiles, path)
+		}
 		return nil
 	})
 	if err != nil {
