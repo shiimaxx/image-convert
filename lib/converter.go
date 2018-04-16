@@ -2,43 +2,36 @@ package converter
 
 import (
 	"image"
-	"image/jpeg"
+	"image/png"
 	"os"
 	"path/filepath"
 )
 
 type Image struct {
-	Name string
-	Type string
+	filename string
 }
 
-func convertToPNG(filePath string) error {
-	file, err := os.Open(filePath)
+func replaceExt(filePath, newExt string) string {
+	ext := filepath.Ext(filePath)
+	return filePath[0:len(filePath)-len(ext)] + newExt
+}
+
+func (i *Image) ConvertToPNG() error {
+	file, err := os.Open(i.filename)
 	defer file.Close()
 	if err != nil {
 		return err
 	}
 
 	img, _, err := image.Decode(file)
-	out, err := os.Create("")
+	out, err := os.Create(replaceExt(i.filename, ".png"))
 	if err != nil {
 		return err
 	}
 
-	err = jpeg.Encode(out, img, nil)
+	err = png.Encode(out, img)
 	if err != nil {
 		return err
-	}
-	return nil
-}
-
-func (i *Image) Convert(destType string) error {
-	switch destType {
-	case "png":
-		err := convertToPNG(i.Path)
-		if err != nil {
-			return err
-		}
 	}
 	return nil
 }
