@@ -19,7 +19,18 @@ func replaceExt(filePath, newExt string) string {
 	return strings.TrimSuffix(filePath, ext) + newExt
 }
 
-func ConvertToPNG(fileName string) error {
+func Convert(filename, destExt string) error {
+	switch destExt {
+	case "png":
+		err := convertToPNG(filename)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func convertToPNG(fileName string) error {
 	file, err := os.Open(fileName)
 	if err != nil {
 		return err
