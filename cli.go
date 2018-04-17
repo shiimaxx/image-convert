@@ -26,11 +26,14 @@ type CLI struct {
 func (c *CLI) Run(args []string) int {
 	var (
 		version bool
+		srcExt  string
 	)
 
 	flags := flag.NewFlagSet(Name, flag.ContinueOnError)
 	flags.SetOutput(c.outStream)
 
+	flags.StringVar(&srcExt, "src", "", "source extension")
+	flags.StringVar(&srcExt, "s", "", "source extension(Short)")
 	flags.BoolVar(&version, "version", false, "print version information")
 
 	if err := flags.Parse(args[1:]); err != nil {
@@ -58,8 +61,14 @@ func (c *CLI) Run(args []string) int {
 		return ExitCodeError
 	}
 
-	imageFiles, err := converter.SearchImageFiles(filePath)
-	fmt.Fprintln(c.outStream, imageFiles)
+	imageFiles, err := lib.MakeImageFiles(filePath, srcExt)
+	for _, file := range imageFiles {
+		err := lib.ConvertToPNG(file)
+		if err != nil {
+			fmt.Fprintln(c.errStream, err)
+			return ExitCodeError
+		}
+	}
 
 	return ExitCodeOK
 }
