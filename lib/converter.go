@@ -7,6 +7,7 @@ import (
 	"image/png"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 type Image struct {
@@ -15,7 +16,7 @@ type Image struct {
 
 func replaceExt(filePath, newExt string) string {
 	ext := filepath.Ext(filePath)
-	return filePath[0:len(filePath)-len(ext)] + newExt
+	return strings.TrimSuffix(filePath, ext) + newExt
 }
 
 func ConvertToPNG(fileName string) error {
