@@ -27,6 +27,7 @@ func (c *CLI) Run(args []string) int {
 	var (
 		version bool
 		srcExt  string
+		destExt string
 	)
 
 	flags := flag.NewFlagSet(Name, flag.ContinueOnError)
@@ -34,6 +35,8 @@ func (c *CLI) Run(args []string) int {
 
 	flags.StringVar(&srcExt, "src", "", "source extension")
 	flags.StringVar(&srcExt, "s", "", "source extension(Short)")
+	flags.StringVar(&destExt, "dest", "", "destination extension")
+	flags.StringVar(&destExt, "d", "", "destination extension(Short)")
 	flags.BoolVar(&version, "version", false, "print version information")
 
 	if err := flags.Parse(args[1:]); err != nil {
