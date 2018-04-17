@@ -36,49 +36,49 @@ func Convert(filename, destExt string) error {
 }
 
 func convertToJPEG(filename string) error {
-	file, err := os.Open(filename)
+	srcFile, err := os.Open(filename)
 	if err != nil {
 		return err
 	}
-	defer file.Close()
+	defer srcFile.Close()
 
-	img, _, err := image.Decode(file)
-	if err != nil {
-		return err
-	}
-
-	out, err := os.Create(replaceExt(filename, ".jpg"))
-	defer out.Close()
+	img, _, err := image.Decode(srcFile)
 	if err != nil {
 		return err
 	}
 
-	err = jpeg.Encode(out, img, nil)
+	destFile, err := os.Create(replaceExt(filename, ".jpg"))
+	if err != nil {
+		return err
+	}
+	defer destFile.Close()
+
+	err = jpeg.Encode(destFile, img, nil)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func convertToPNG(fileName string) error {
-	file, err := os.Open(fileName)
+func convertToPNG(filename string) error {
+	srcFile, err := os.Open(filename)
 	if err != nil {
 		return err
 	}
-	defer file.Close()
+	defer srcFile.Close()
 
-	img, _, err := image.Decode(file)
-	if err != nil {
-		return err
-	}
-
-	out, err := os.Create(replaceExt(fileName, ".png"))
-	defer out.Close()
+	img, _, err := image.Decode(srcFile)
 	if err != nil {
 		return err
 	}
 
-	err = png.Encode(out, img)
+	destFile, err := os.Create(replaceExt(filename, ".png"))
+	if err != nil {
+		return err
+	}
+	defer destFile.Close()
+
+	err = png.Encode(destFile, img)
 	if err != nil {
 		return err
 	}
