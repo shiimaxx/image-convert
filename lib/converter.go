@@ -2,13 +2,15 @@ package lib
 
 import (
 	"image"
+	_ "image/gif"
+	_ "image/jpeg"
 	"image/png"
 	"os"
 	"path/filepath"
 )
 
 type Image struct {
-	filename string
+	fileName string
 }
 
 func replaceExt(filePath, newExt string) string {
@@ -16,15 +18,20 @@ func replaceExt(filePath, newExt string) string {
 	return filePath[0:len(filePath)-len(ext)] + newExt
 }
 
-func (i *Image) ConvertToPNG() error {
-	file, err := os.Open(i.filename)
+func ConvertToPNG(fileName string) error {
+	file, err := os.Open(fileName)
+	if err != nil {
+		return err
+	}
 	defer file.Close()
+
+	img, _, err := image.Decode(file)
 	if err != nil {
 		return err
 	}
 
-	img, _, err := image.Decode(file)
-	out, err := os.Create(replaceExt(i.filename, ".png"))
+	out, err := os.Create(replaceExt(fileName, ".png"))
+	defer out.Close()
 	if err != nil {
 		return err
 	}
