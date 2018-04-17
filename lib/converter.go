@@ -3,7 +3,7 @@ package lib
 import (
 	"image"
 	_ "image/gif"
-	_ "image/jpeg"
+	"image/jpeg"
 	"image/png"
 	"os"
 	"path/filepath"
@@ -26,6 +26,36 @@ func Convert(filename, destExt string) error {
 		if err != nil {
 			return err
 		}
+	case "jpeg", "jpg":
+		err := convertToJPEG(filename)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func convertToJPEG(filename string) error {
+	file, err := os.Open(filename)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	img, _, err := image.Decode(file)
+	if err != nil {
+		return err
+	}
+
+	out, err := os.Create(replaceExt(filename, ".jpg"))
+	defer out.Close()
+	if err != nil {
+		return err
+	}
+
+	err = jpeg.Encode(out, img, nil)
+	if err != nil {
+		return err
 	}
 	return nil
 }
