@@ -13,7 +13,4 @@ FUNCTIONS
 func Convert(filename, destExt string) error
     Convert convert image to destExt
 
-func MakeImageFiles(dir, srcExt string) ([]string, error)
-    MakeImageFiles return image files of srcExt
-
 
