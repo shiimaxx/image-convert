@@ -84,6 +84,11 @@ func (c *CLI) Run(args []string) int {
 	}
 
 	imageFiles, err := makeImageFiles(filePath, srcExt)
+	if err != nil {
+		fmt.Fprintln(c.errStream, err)
+		return ExitCodeError
+	}
+
 	for _, f := range imageFiles {
 		err := converter.Convert(f, destExt)
 		if err != nil {
