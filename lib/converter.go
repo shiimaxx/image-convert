@@ -2,7 +2,7 @@ package lib
 
 import (
 	"image"
-	_ "image/gif"
+	"image/gif"
 	"image/jpeg"
 	"image/png"
 	"os"
@@ -28,6 +28,11 @@ func Convert(filename, destExt string) error {
 		}
 	case "jpeg", "jpg":
 		err := convertToJPEG(filename)
+		if err != nil {
+			return err
+		}
+	case "gif":
+		err := convertToGIF(filename)
 		if err != nil {
 			return err
 		}
@@ -79,6 +84,31 @@ func convertToPNG(filename string) error {
 	defer destFile.Close()
 
 	err = png.Encode(destFile, img)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func convertToGIF(filename string) error {
+	srcFile, err := os.Open(filename)
+	if err != nil {
+		return err
+	}
+	defer srcFile.Close()
+
+	img, _, err := image.Decode(srcFile)
+	if err != nil {
+		return err
+	}
+
+	destFile, err := os.Create(replaceExt(filename, ".gif"))
+	if err != nil {
+		return err
+	}
+	defer destFile.Close()
+
+	err = gif.Encode(destFile, img, nil)
 	if err != nil {
 		return err
 	}
