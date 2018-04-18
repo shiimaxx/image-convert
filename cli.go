@@ -64,9 +64,9 @@ func (c *CLI) Run(args []string) int {
 		return ExitCodeError
 	}
 
-	imageFiles, err := lib.MakeImageFiles(filePath, srcExt)
+	imageFiles, err := converter.MakeImageFiles(filePath, srcExt)
 	for _, f := range imageFiles {
-		err := lib.Convert(f, destExt)
+		err := converter.Convert(f, destExt)
 		if err != nil {
 			fmt.Fprintln(c.errStream, err)
 			return ExitCodeError
