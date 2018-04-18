@@ -33,27 +33,6 @@ func decodeImage(filename string) (image.Image, error) {
 	return img, nil
 }
 
-func Convert(filename, destExt string) error {
-	switch destExt {
-	case "png":
-		err := convertToPNG(filename)
-		if err != nil {
-			return err
-		}
-	case "jpeg", "jpg":
-		err := convertToJPEG(filename)
-		if err != nil {
-			return err
-		}
-	case "gif":
-		err := convertToGIF(filename)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
 func convertToJPEG(filename string) error {
 	img, err := decodeImage(filename)
 	if err != nil {
@@ -111,6 +90,29 @@ func convertToGIF(filename string) error {
 	return nil
 }
 
+// Convert convert image to destExt
+func Convert(filename, destExt string) error {
+	switch destExt {
+	case "png":
+		err := convertToPNG(filename)
+		if err != nil {
+			return err
+		}
+	case "jpeg", "jpg":
+		err := convertToJPEG(filename)
+		if err != nil {
+			return err
+		}
+	case "gif":
+		err := convertToGIF(filename)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// MakeImageFiles return image files of srcExt
 func MakeImageFiles(dir, srcExt string) ([]string, error) {
 	nameSuffix := "." + srcExt
 	imageFiles := []string{}
