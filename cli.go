@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 
 	"github.com/shiimaxx/image-convert/lib"
 )
@@ -20,6 +21,24 @@ type CLI struct {
 	// outStream and errStream are the stdout and stderr
 	// to write message from the CLI.
 	outStream, errStream io.Writer
+}
+
+func makeImageFiles(dir, srcExt string) ([]string, error) {
+	nameSuffix := "." + srcExt
+	imageFiles := []string{}
+	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if filepath.Ext(path) == nameSuffix {
+			imageFiles = append(imageFiles, path)
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return imageFiles, nil
 }
 
 // Run invokes the CLI with the given arguments.
@@ -64,7 +83,7 @@ func (c *CLI) Run(args []string) int {
 		return ExitCodeError
 	}
 
-	imageFiles, err := converter.MakeImageFiles(filePath, srcExt)
+	imageFiles, err := makeImageFiles(filePath, srcExt)
 	for _, f := range imageFiles {
 		err := converter.Convert(f, destExt)
 		if err != nil {

@@ -109,22 +109,3 @@ func Convert(filename, destExt string) error {
 	}
 	return nil
 }
-
-// MakeImageFiles return image files of srcExt
-func MakeImageFiles(dir, srcExt string) ([]string, error) {
-	nameSuffix := "." + srcExt
-	imageFiles := []string{}
-	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-		if filepath.Ext(path) == nameSuffix {
-			imageFiles = append(imageFiles, path)
-		}
-		return nil
-	})
-	if err != nil {
-		return nil, err
-	}
-	return imageFiles, nil
-}
