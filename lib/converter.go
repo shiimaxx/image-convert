@@ -1,3 +1,5 @@
+// Package converter provides image convert.
+// support fomat GIF, JPEG and PNG.
 package converter
 
 import (
