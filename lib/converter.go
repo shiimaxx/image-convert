@@ -19,6 +19,20 @@ func replaceExt(filePath, newExt string) string {
 	return strings.TrimSuffix(filePath, ext) + newExt
 }
 
+func decodeImage(filename string) (image.Image, error) {
+	srcFile, err := os.Open(filename)
+	if err != nil {
+		return nil, err
+	}
+	defer srcFile.Close()
+
+	img, _, err := image.Decode(srcFile)
+	if err != nil {
+		return nil, err
+	}
+	return img, nil
+}
+
 func Convert(filename, destExt string) error {
 	switch destExt {
 	case "png":
@@ -41,13 +55,7 @@ func Convert(filename, destExt string) error {
 }
 
 func convertToJPEG(filename string) error {
-	srcFile, err := os.Open(filename)
-	if err != nil {
-		return err
-	}
-	defer srcFile.Close()
-
-	img, _, err := image.Decode(srcFile)
+	img, err := decodeImage(filename)
 	if err != nil {
 		return err
 	}
@@ -66,13 +74,7 @@ func convertToJPEG(filename string) error {
 }
 
 func convertToPNG(filename string) error {
-	srcFile, err := os.Open(filename)
-	if err != nil {
-		return err
-	}
-	defer srcFile.Close()
-
-	img, _, err := image.Decode(srcFile)
+	img, err := decodeImage(filename)
 	if err != nil {
 		return err
 	}
@@ -91,13 +93,7 @@ func convertToPNG(filename string) error {
 }
 
 func convertToGIF(filename string) error {
-	srcFile, err := os.Open(filename)
-	if err != nil {
-		return err
-	}
-	defer srcFile.Close()
-
-	img, _, err := image.Decode(srcFile)
+	img, err := decodeImage(filename)
 	if err != nil {
 		return err
 	}
