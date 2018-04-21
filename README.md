@@ -1,5 +1,7 @@
 # image-convert
 
+[![wercker status](https://app.wercker.com/status/0b0f88b8cd21f50667fc77966fbc797b/s/master "wercker status")](https://app.wercker.com/project/byKey/0b0f88b8cd21f50667fc77966fbc797b)
+
 ## Usage
 
 ```
