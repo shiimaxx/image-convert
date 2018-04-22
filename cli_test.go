@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"image"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -10,26 +11,76 @@ import (
 )
 
 var cases = []struct {
-	args    string
-	outputs []string
+	name         string
+	args         string
+	outputs      []string
+	outputFormat string
 }{
 	{
-		args: "image-convert testdata",
+		name: "jepg to png",
+		args: "image-convert testdata/jpeg",
 		outputs: []string{
-			"testdata/icon-001.png",
-			"testdata/dir-001/icon-002.png",
-			"testdata/dir-002/icon-003.png",
-			"testdata/dir-002/dir-002-001/icon-004.png",
+			"testdata/jpeg/icon-001.png",
+			"testdata/jpeg/dir-001/icon-002.png",
+			"testdata/jpeg/dir-002/icon-003.png",
+			"testdata/jpeg/dir-002/dir-002-001/icon-004.png",
 		},
+		outputFormat: "png",
 	},
 	{
-		args: "image-convert -s jpg -d gif testdata",
+		name: "jepg to gif",
+		args: "image-convert -s jpg -d gif testdata/jpeg",
 		outputs: []string{
-			"testdata/icon-001.gif",
-			"testdata/dir-001/icon-002.gif",
-			"testdata/dir-002/icon-003.gif",
-			"testdata/dir-002/dir-002-001/icon-004.gif",
+			"testdata/jpeg/icon-001.gif",
+			"testdata/jpeg/dir-001/icon-002.gif",
+			"testdata/jpeg/dir-002/icon-003.gif",
+			"testdata/jpeg/dir-002/dir-002-001/icon-004.gif",
 		},
+		outputFormat: "gif",
+	},
+	{
+		name: "png to jpeg",
+		args: "image-convert -s png -d jpeg testdata/png",
+		outputs: []string{
+			"testdata/png/icon-001.jpg",
+			"testdata/png/dir-001/icon-002.jpg",
+			"testdata/png/dir-002/icon-003.jpg",
+			"testdata/png/dir-002/dir-002-001/icon-004.jpg",
+		},
+		outputFormat: "jpeg",
+	},
+	{
+		name: "png to gif",
+		args: "image-convert -s png -d gif testdata/png",
+		outputs: []string{
+			"testdata/png/icon-001.gif",
+			"testdata/png/dir-001/icon-002.gif",
+			"testdata/png/dir-002/icon-003.gif",
+			"testdata/png/dir-002/dir-002-001/icon-004.gif",
+		},
+		outputFormat: "gif",
+	},
+	{
+		name: "gif to jpeg",
+		args: "image-convert -s gif -d jpeg testdata/gif",
+		outputs: []string{
+			"testdata/gif/icon-001.jpg",
+			"testdata/gif/dir-001/icon-002.jpg",
+			"testdata/gif/dir-002/icon-003.jpg",
+			"testdata/gif/dir-002/dir-002-001/icon-004.jpg",
+		},
+		outputFormat: "jpeg",
+	},
+	{
+		name: "gif to png",
+		args: "image-convert -s png -d gif testdata/gif",
+		outputs: []string{
+			"testdata/gif/icon-001.gif",
+			"testdata/gif/dir-001/icon-002.gif",
+			"testdata/png/dir-002/icon-003.gif",
+			"testdata/png/dir-002/dir-002-001/icon-004.gif",
+		},
+		outputFormat: "gif",
 	},
 }
 
@@ -38,19 +89,27 @@ func TestRun_ImageConvert(t *testing.T) {
 	cli := &CLI{outStream: outStream, errStream: errStream}
 
 	for _, c := range cases {
-		args := strings.Split(c.args, " ")
-		status := cli.Run(args)
-		if status != ExitCodeOK {
-			t.Errorf("expected %d to eq %d", status, ExitCodeOK)
-		}
-		for _, o := range c.outputs {
-			_, err := os.Stat(o)
-			if os.IsNotExist(err) {
-				t.Error(err)
+		t.Run(c.name, func(t *testing.T) {
+			args := strings.Split(c.args, " ")
+			status := cli.Run(args)
+			if status != ExitCodeOK {
+				t.Errorf("expected %d to eq %d", status, ExitCodeOK)
 			}
-		}
-	}
+			for _, o := range c.outputs {
+				_, err := os.Stat(o)
+				if os.IsNotExist(err) {
+					t.Error(err)
+				}
+				f, _ := os.Open(o)
+				defer f.Close()
+				_, format, _ := image.DecodeConfig(f)
+				if format != c.outputFormat {
+					t.Errorf("expected %s to eq %s", format, c.outputFormat)
+				}
 
+			}
+		})
+	}
 }
 
 func TestRun_versionFlag(t *testing.T) {
