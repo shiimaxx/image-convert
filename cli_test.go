@@ -85,6 +85,7 @@ var cases = []struct {
 }
 
 func TestRun_ImageConvert(t *testing.T) {
+	t.Helper()
 	outStream, errStream := new(bytes.Buffer), new(bytes.Buffer)
 	cli := &CLI{outStream: outStream, errStream: errStream}
 
@@ -100,9 +101,15 @@ func TestRun_ImageConvert(t *testing.T) {
 				if os.IsNotExist(err) {
 					t.Error(err)
 				}
-				f, _ := os.Open(o)
+				f, err := os.Open(o)
+				if err != nil {
+					t.Fatal(err)
+				}
 				defer f.Close()
-				_, format, _ := image.DecodeConfig(f)
+				_, format, err := image.DecodeConfig(f)
+				if err != nil {
+					t.Fatal(err)
+				}
 				if format != c.outputFormat {
 					t.Errorf("expected %s to eq %s", format, c.outputFormat)
 				}
@@ -164,10 +171,14 @@ func TestRun_fileNotExists(t *testing.T) {
 }
 
 func TestRun_isNotDir(t *testing.T) {
+	t.Helper()
 	outStream, errStream := new(bytes.Buffer), new(bytes.Buffer)
 	cli := &CLI{outStream: outStream, errStream: errStream}
 
-	tempfile, _ := ioutil.TempFile("", "temp")
+	tempfile, err := ioutil.TempFile("", "temp")
+	if err != nil {
+		t.Fatal(err)
+	}
 	defer os.Remove(tempfile.Name())
 
 	args := strings.Split(fmt.Sprintf("image-convert %s", tempfile.Name()), " ")
