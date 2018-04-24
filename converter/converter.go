@@ -7,6 +7,7 @@ import (
 	"image/gif"
 	"image/jpeg"
 	"image/png"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -17,32 +18,21 @@ func replaceExt(filePath, newExt string) string {
 	return strings.TrimSuffix(filePath, ext) + newExt
 }
 
-func decodeImage(filename string) (image.Image, error) {
-	srcFile, err := os.Open(filename)
-	if err != nil {
-		return nil, err
-	}
-	defer srcFile.Close()
-
-	img, _, err := image.Decode(srcFile)
+func decodeImage(r io.Reader) (image.Image, error) {
+	img, _, err := image.Decode(r)
 	if err != nil {
 		return nil, err
 	}
 	return img, nil
 }
 
-func convertToJPEG(filename string) error {
-	img, err := decodeImage(filename)
+func convertToJPEG(filename string, src io.Reader) error {
+	img, err := decodeImage(src)
 	if err != nil {
 		return err
 	}
 
 	destFile, err := os.Create(replaceExt(filename, ".jpg"))
-	if err != nil {
-		return err
-	}
-	defer destFile.Close()
-
 	err = jpeg.Encode(destFile, img, nil)
 	if err != nil {
 		return err
@@ -50,8 +40,8 @@ func convertToJPEG(filename string) error {
 	return nil
 }
 
-func convertToPNG(filename string) error {
-	img, err := decodeImage(filename)
+func convertToPNG(filename string, src io.Reader) error {
+	img, err := decodeImage(src)
 	if err != nil {
 		return err
 	}
@@ -69,8 +59,8 @@ func convertToPNG(filename string) error {
 	return nil
 }
 
-func convertToGIF(filename string) error {
-	img, err := decodeImage(filename)
+func convertToGIF(filename string, src io.Reader) error {
+	img, err := decodeImage(src)
 	if err != nil {
 		return err
 	}
@@ -90,19 +80,25 @@ func convertToGIF(filename string) error {
 
 // Convert convert image to destExt
 func Convert(filename, destExt string) error {
+	srcFile, err := os.Open(filename)
+	if err != nil {
+		return err
+	}
+	defer srcFile.Close()
+
 	switch destExt {
 	case "png":
-		err := convertToPNG(filename)
+		err := convertToPNG(filename, srcFile)
 		if err != nil {
 			return err
 		}
 	case "jpeg", "jpg":
-		err := convertToJPEG(filename)
+		err := convertToJPEG(filename, srcFile)
 		if err != nil {
 			return err
 		}
 	case "gif":
-		err := convertToGIF(filename)
+		err := convertToGIF(filename, srcFile)
 		if err != nil {
 			return err
 		}
